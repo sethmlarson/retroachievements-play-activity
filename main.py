@@ -1,3 +1,4 @@
+import csv
 import datetime
 import os
 import re
@@ -122,6 +123,33 @@ def main():
                 tuple(new_row[key] for key in db_keys),
             )
             db.commit()
+
+    with open("README.md", "w") as f:
+        f.truncate()
+        f.write("""# Retro Achievements Play Activity
+
+Script which takes a [RetroAchievements API key](https://api-docs.retroachievements.org/)
+and creates a database containing information
+about play using RA-compatible emulators such as
+games, achievements, and play activity.
+
+|Console|Game|Completion|Play Time|Remaining Time|
+|-------|----|----------|---------|--------------|
+""")
+        game_activities = sorted(db.execute("SELECT console_name, name, id, MAX(completion), MAX(duration) FROM games GROUP BY console_name, name, id;").fetchall())
+        for console, game, game_id, completion, duration in game_activities:
+            remaining = int((1.0 - (completion / 10000.0)) * (duration / (completion / 10000.0)))
+            f.write(f"|{console}|[{game}](https://retroachievements.org/game/{game_id})|{completion//100}%|{seconds_as_duration(duration)}|{seconds_as_duration(remaining)}|\n")
+        f.write("""
+## License
+
+MIT
+""")
+
+
+def seconds_as_duration(duration: int) -> str:
+    return f"{duration//3600}h {str((duration%3600)//60).zfill(2)}m"
+
 
 
 if __name__ == "__main__":

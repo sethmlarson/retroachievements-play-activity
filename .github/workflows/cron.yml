@@ -34,6 +34,6 @@ jobs:
           git config --global user.email "sethmichaellarson@gmail.com"
 
           datetime=`date "+%Y-%-m-%-d"`
-          git add retroachievements-play-activity.sqlite
+          git add retroachievements-play-activity.sqlite README.md
           git commit -m "Updated data for $datetime"
           git push origin main --quiet
