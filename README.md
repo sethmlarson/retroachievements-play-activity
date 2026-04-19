@@ -7,8 +7,8 @@ games, achievements, and play activity.
 
 |Console|Game|Completion|Play Time|Remaining Time|
 |-------|----|----------|---------|--------------|
-|Game Boy|[Kaeru no Tame ni Kane wa Naru](https://retroachievements.org/game/5045)|55%|4h 27m|3h 32m|
-|Game Boy Color|[The Legend of Zelda: Oracle of Seasons](https://retroachievements.org/game/676)|20%|6h 32m|25h 35m|
+|Game Boy|[Kaeru no Tame ni Kane wa Naru](https://retroachievements.org/game/5045)|59%|4h 27m|3h 04m|
+|Game Boy Color|[The Legend of Zelda: Oracle of Seasons](https://retroachievements.org/game/676)|56%|6h 32m|5h 04m|
 
 ## License
 

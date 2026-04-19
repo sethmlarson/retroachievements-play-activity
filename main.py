@@ -88,11 +88,19 @@ def main():
 
         # Calculate what the expected row would be.
         game = resp.json()
-        completion = int(
-            re.search(r"([0-9]{1,2}\.[0-9]{2})%", game["UserCompletion"])
-            .group(1)
-            .replace(".", "", 1)
-        )
+
+        # Only use 'Progression' achievements,
+        # not the optional or missable achievements,
+        # when calculating completion percentage.
+        progression_total = 0
+        progression_completed = 0
+        for _, achievement in game["Achievements"].items():
+            if achievement["Type"] not in ("win_condition", "progression"):
+                continue
+            progression_total += 1
+            progression_completed += bool(achievement.get("DateEarned", False))
+
+        completion = int(progression_completed * 10000 / progression_total)
         new_row = {
             "id": game_id,
             "name": game["Title"],
@@ -136,10 +144,18 @@ games, achievements, and play activity.
 |Console|Game|Completion|Play Time|Remaining Time|
 |-------|----|----------|---------|--------------|
 """)
-        game_activities = sorted(db.execute("SELECT console_name, name, id, MAX(completion), MAX(duration) FROM games GROUP BY console_name, name, id;").fetchall())
+        game_activities = sorted(
+            db.execute(
+                "SELECT console_name, name, id, MAX(completion), MAX(duration) FROM games GROUP BY console_name, name, id;"
+            ).fetchall()
+        )
         for console, game, game_id, completion, duration in game_activities:
-            remaining = int((1.0 - (completion / 10000.0)) * (duration / (completion / 10000.0)))
-            f.write(f"|{console}|[{game}](https://retroachievements.org/game/{game_id})|{completion//100}%|{seconds_as_duration(duration)}|{seconds_as_duration(remaining)}|\n")
+            remaining = int(
+                (1.0 - (completion / 10000.0)) * (duration / (completion / 10000.0))
+            )
+            f.write(
+                f"|{console}|[{game}](https://retroachievements.org/game/{game_id})|{completion // 100}%|{seconds_as_duration(duration)}|{seconds_as_duration(remaining)}|\n"
+            )
         f.write("""
 ## License
 
@@ -148,8 +164,7 @@ MIT
 
 
 def seconds_as_duration(duration: int) -> str:
-    return f"{duration//3600}h {str((duration%3600)//60).zfill(2)}m"
-
+    return f"{duration // 3600}h {str((duration % 3600) // 60).zfill(2)}m"
 
 
 if __name__ == "__main__":
