@@ -150,9 +150,12 @@ games, achievements, and play activity.
             ).fetchall()
         )
         for console, game, game_id, completion, duration in game_activities:
-            remaining = int(
-                (1.0 - (completion / 10000.0)) * (duration / (completion / 10000.0))
-            )
+            if completion == 0:
+                remaining = 0
+            else:
+                remaining = int(
+                    (1.0 - (completion / 10000.0)) * (duration / (completion / 10000.0))
+                )
             f.write(
                 f"|{console}|[{game}](https://retroachievements.org/game/{game_id})|{completion // 100}%|{seconds_as_duration(duration)}|{seconds_as_duration(remaining)}|\n"
             )
